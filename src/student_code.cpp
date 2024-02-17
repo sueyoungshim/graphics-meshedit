@@ -120,14 +120,31 @@ namespace CGL
     FaceIter f1 = twin0->face();
     EdgeIter ab = h2->edge();
     EdgeIter bd = twin1->edge();
-    EdgeIter dc = twin2->edge();
+    EdgeIter cd = twin2->edge();
     EdgeIter ac = h1->edge();
-    EdgeIter bc = h0->edge();
 
+    a->halfedge() = h0;
+    b->halfedge() = twin1;
+    c->halfedge() = h1;
+    d->halfedge() = twin0;
     
-
+    ab->halfedge() = h2;
+    bd->halfedge() = twin1;
+    cd->halfedge() = twin2;
+    ac->halfedge() = h1;
+    e0->halfedge() = h0;
     
-    return EdgeIter();
+    f0->halfedge() = h0;
+    f1->halfedge() = twin0;
+    
+    h0->setNeighbors(twin2, twin0, a, e0, f0);
+    twin0->setNeighbors(h2, h0, d, e0, f1);
+    h1->setNeighbors(h0, h1->twin(), c, ac, f0);
+    h2->setNeighbors(twin1, h2->twin(), a, ab, f1);
+    twin1->setNeighbors(twin0, twin1->twin(), b, bd, f1);
+    twin2->setNeighbors(h1, twin2->twin(), d, cd, f0);
+  
+    return e0;
   }
 
   VertexIter HalfedgeMesh::splitEdge( EdgeIter e0 )
