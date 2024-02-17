@@ -80,6 +80,7 @@ namespace CGL
     }
     return evaluate1D(u_bezier, v);
   }
+  
 
   Vector3D Vertex::normal( void ) const
   {
@@ -87,23 +88,45 @@ namespace CGL
     // Returns an approximate unit normal at this vertex, computed by
     // taking the area-weighted average of the normals of neighboring
     // triangles, then normalizing.
-    HalfEdgeCIter h = this->halfedge();
+    HalfedgeCIter h = this->halfedge();
+    Vector3D result;
     do {
-      HalfEdgeCIter h_twin = h->twin(); // get the opposite half-edge
-      VertexCIter v = h_twin->vertex(); // vertex is the 'source' of the half-edge, so
-                                        // h->vertex() is v, whereas h_twin->vertex()
-                                        // is the neighboring vertex
-      cout << v->position << endl;      // print the vertex position
-      h = h_twin->next();               // move to the next outgoing half-edge of the vertex
+      Vector3D v1 = h->vertex()->position;
+      h = h->next();
+      Vector3D v2 = h->vertex()->position;
+      h = h->next();
+      Vector3D v3 = h->vertex()->position;
+      result += cross(v1-v2, v2-v3);
+      h = h->twin();
     } while(h != this->halfedge());
-    
-    return Vector3D();
+    return result.unit();
   }
 
   EdgeIter HalfedgeMesh::flipEdge( EdgeIter e0 )
   {
     // TODO Part 4.
     // This method should flip the given edge and return an iterator to the flipped edge.
+    HalfedgeIter h0 = e0->halfedge();
+    HalfedgeIter twin0 = h0->twin();
+    VertexIter b = h0->vertex();
+    VertexIter c = twin0->vertex();
+    HalfedgeIter h1 = h0->next();
+    HalfedgeIter h2 = h1->next();
+    VertexIter a = h2->vertex();
+    HalfedgeIter twin1 = twin0->next();
+    HalfedgeIter twin2 = twin1->next();
+    VertexIter d = twin2->vertex();
+    FaceIter f0 = h0->face();
+    FaceIter f1 = twin0->face();
+    EdgeIter ab = h2->edge();
+    EdgeIter bd = twin1->edge();
+    EdgeIter dc = twin2->edge();
+    EdgeIter ac = h1->edge();
+    EdgeIter bc = h0->edge();
+
+    
+
+    
     return EdgeIter();
   }
 
