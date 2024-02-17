@@ -16,7 +16,14 @@ namespace CGL
   std::vector<Vector2D> BezierCurve::evaluateStep(std::vector<Vector2D> const &points)
   { 
     // TODO Part 1.
-    return std::vector<Vector2D>();
+    std::vector<Vector2D> interpolated;
+    int i = 0;
+    while (i < points.size() - 1) {
+      Vector2D p = (1 - t) * points[i] + t * points[i+1];
+      interpolated.push_back((1 - t) * points[i] + t * points[i+1]);
+      i++;
+    }
+    return interpolated;
   }
 
   /**
@@ -30,7 +37,14 @@ namespace CGL
   std::vector<Vector3D> BezierPatch::evaluateStep(std::vector<Vector3D> const &points, double t) const
   {
     // TODO Part 2.
-    return std::vector<Vector3D>();
+    std::vector<Vector3D> interpolated;
+    int i = 0;
+    while (i < points.size() - 1) {
+      Vector3D p = (1 - t) * points[i] + t * points[i+1];
+      interpolated.push_back((1 - t) * points[i] + t * points[i+1]);
+      i++;
+    }
+    return interpolated;
   }
 
   /**
@@ -43,7 +57,11 @@ namespace CGL
   Vector3D BezierPatch::evaluate1D(std::vector<Vector3D> const &points, double t) const
   {
     // TODO Part 2.
-    return Vector3D();
+    std::vector<Vector3D> intermediate = evaluateStep(points, t);
+    for (int i = 0; i < points.size()-2; i++) {
+      intermediate = evaluateStep(intermediate, t);
+    }
+    return intermediate[0];
   }
 
   /**
@@ -56,7 +74,11 @@ namespace CGL
   Vector3D BezierPatch::evaluate(double u, double v) const 
   {  
     // TODO Part 2.
-    return Vector3D();
+    std::vector<Vector3D> u_bezier;
+    for (int i = 0; i < controlPoints.size(); i++) {
+      u_bezier.push_back(evaluate1D(controlPoints[i], u));
+    }
+    return evaluate1D(u_bezier, v);
   }
 
   Vector3D Vertex::normal( void ) const
@@ -65,6 +87,16 @@ namespace CGL
     // Returns an approximate unit normal at this vertex, computed by
     // taking the area-weighted average of the normals of neighboring
     // triangles, then normalizing.
+    HalfEdgeCIter h = this->halfedge();
+    do {
+      HalfEdgeCIter h_twin = h->twin(); // get the opposite half-edge
+      VertexCIter v = h_twin->vertex(); // vertex is the 'source' of the half-edge, so
+                                        // h->vertex() is v, whereas h_twin->vertex()
+                                        // is the neighboring vertex
+      cout << v->position << endl;      // print the vertex position
+      h = h_twin->next();               // move to the next outgoing half-edge of the vertex
+    } while(h != this->halfedge());
+    
     return Vector3D();
   }
 
