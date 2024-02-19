@@ -53,6 +53,10 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "../dae/teapot.dae"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "../dae/cube.dae"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
