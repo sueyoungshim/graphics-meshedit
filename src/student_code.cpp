@@ -282,22 +282,45 @@ namespace CGL
     // information about which subdivide edges come from splitting an edge in the original mesh, and which edges
     // are new, by setting the flat Edge::isNew. Note that in this loop, we only want to iterate over edges of
     // the original mesh---otherwise, we'll end up splitting edges that we just split (and the loop will never end!)
+    vector<EdgeIter> newEdges;
     for (EdgeIter e = mesh.edgesBegin(); e != mesh.edgesEnd(); e++) {
       if (!e->isNew) {
         std::cout << e->halfedge()->vertex()->position << std::endl;
         VertexIter newVertex = mesh.splitEdge(e);
-        newVertex->halfedge()->edge()->isNew = true;
-        newVertex->halfedge()->twin()->next()->edge()->isNew = true;
-        newVertex->halfedge()->next()->next()->edge()->isNew = true;
-        newVertex->halfedge()->twin()->next()->twin()->next()->edge()->isNew = true;
+        newVertex->newPosition = e->newPosition;
+        newVertex->isNew = true;
+        EdgeIter e1 = newVertex->halfedge()->edge();
+        EdgeIter e2 = newVertex->halfedge()->twin()->next()->edge();
+        EdgeIter e3 = newVertex->halfedge()->next()->next()->edge();
+        EdgeIter e4 = newVertex->halfedge()->twin()->next()->twin()->next()->edge();
+        
+        e1->isNew = true;
+        e2->isNew = true;
+        e3->isNew = true;
+        e4->isNew = true;
+        
+//        newEdges.push_back(e1);
+        newEdges.push_back(e2);
+        newEdges.push_back(e3);
+//        newEdges.push_back(e4);
       }
     }
     
     std::cout << "step 4" << std::endl;
     // 4. Flip any new edge that connects an old and new vertex.
     for (EdgeIter e = mesh.edgesBegin(); e != mesh.edgesEnd(); e++) {
-      if (e->isNew) {
-        if (e->halfedge()->vertex()->isNew != e->halfedge()->twin()->vertex()->isNew) {
+      if (e->isNew && (std::find(newEdges.begin(), newEdges.end(), e) != newEdges.end())) {
+//        if (e->halfedge()->vertex()->isNew != e->halfedge()->twin()->vertex()->isNew) {
+//          mesh.flipEdge(e);
+//        }
+//      }
+//      if (e->isNew) {
+        std::cout << "Edge is new" << std::endl;
+//        if (e->halfedge()->vertex()->isNew) {
+        if ((e->halfedge()->vertex()->isNew && !e->halfedge()->twin()->vertex()->isNew)
+            || (!e->halfedge()->vertex()->isNew && e->halfedge()->twin()->vertex()->isNew)) {
+          
+          std::cout << "flipping edge" << std::endl;
           mesh.flipEdge(e);
         }
       }

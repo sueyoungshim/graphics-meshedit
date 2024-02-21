@@ -64,6 +64,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "../bzc/my_curve.bzc"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "../bez/teapot.bez"
             isEnabled = "NO">
          </CommandLineArgument>
