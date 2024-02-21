@@ -240,7 +240,6 @@ namespace CGL
     // 1. Compute new positions for all the vertices in the input mesh, using the Loop subdivision rule,
     // and store them in Vertex::newPosition. At this point, we also want to mark each vertex as being
     // a vertex of the original mesh.
-    std::cout << "step 1" << std::endl;
     for (VertexIter v = mesh.verticesBegin(); v != mesh.verticesEnd(); v++) {
       std::cout << v->position << std::endl;
       Size n = v->degree();
@@ -259,7 +258,6 @@ namespace CGL
       v->isNew = false;
     }
     
-    std::cout << "step 2" << std::endl;
     // 2. Compute the updated vertex positions associated with edges, and store it in Edge::newPosition.
     for (EdgeIter e = mesh.edgesBegin(); e != mesh.edgesEnd(); e++) {
       std::cout << e->length() << std::endl;
@@ -277,7 +275,6 @@ namespace CGL
 //      newVertex->isNew = true;
     }
     
-    std::cout << "step 3" << std::endl;
     // 3. Split every edge in the mesh, in any order. For future reference, we're also going to store some
     // information about which subdivide edges come from splitting an edge in the original mesh, and which edges
     // are new, by setting the flat Edge::isNew. Note that in this loop, we only want to iterate over edges of
@@ -299,34 +296,20 @@ namespace CGL
         e3->isNew = true;
         e4->isNew = true;
         
-//        newEdges.push_back(e1);
         newEdges.push_back(e2);
         newEdges.push_back(e3);
-//        newEdges.push_back(e4);
       }
     }
     
-    std::cout << "step 4" << std::endl;
     // 4. Flip any new edge that connects an old and new vertex.
     for (EdgeIter e = mesh.edgesBegin(); e != mesh.edgesEnd(); e++) {
       if (e->isNew && (std::find(newEdges.begin(), newEdges.end(), e) != newEdges.end())) {
-//        if (e->halfedge()->vertex()->isNew != e->halfedge()->twin()->vertex()->isNew) {
-//          mesh.flipEdge(e);
-//        }
-//      }
-//      if (e->isNew) {
-        std::cout << "Edge is new" << std::endl;
-//        if (e->halfedge()->vertex()->isNew) {
-        if ((e->halfedge()->vertex()->isNew && !e->halfedge()->twin()->vertex()->isNew)
-            || (!e->halfedge()->vertex()->isNew && e->halfedge()->twin()->vertex()->isNew)) {
-          
-          std::cout << "flipping edge" << std::endl;
+        if ((e->halfedge()->vertex()->isNew != e->halfedge()->twin()->vertex()->isNew)) {
           mesh.flipEdge(e);
         }
       }
     }
     
-    std::cout << "step 5" << std::endl;
     // 5. Copy the new vertex positions into final Vertex::position.
     for (VertexIter v = mesh.verticesBegin(); v != mesh.verticesEnd(); v++) {
       v->position = v->newPosition;
